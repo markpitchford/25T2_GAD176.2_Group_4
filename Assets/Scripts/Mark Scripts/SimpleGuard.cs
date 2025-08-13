@@ -16,7 +16,7 @@ public class SimpleGuard : BaseEnemy
     {
         if (!player) return;
 
-        // --- Vision: subtraction, magnitude, normalization, angle ---
+        
         Vector3 toPlayer = player.position - transform.position;
         float dist = toPlayer.magnitude;
         if (dist <= visionRange)
@@ -36,7 +36,7 @@ public class SimpleGuard : BaseEnemy
             }
         }
 
-        // --- Hearing: very basic radius check ---
+        
         if (dist <= hearingRange)
         {
             lastKnownPos = player.position;
@@ -65,10 +65,10 @@ public class SimpleGuard : BaseEnemy
         if (!player) return;
         lastKnownPos = player.position;
         MoveTowards(lastKnownPos, chaseSpeed);
-        // (Optional: if (Vector3.Distance(transform.position, player.position) < 1.5f) Attack(); )
+        
     }
 
-    // Minimal movement helper (rotation + addition)
+    
     void MoveTowards(Vector3 target, float speed)
     {
         Vector3 to = target - transform.position;
@@ -78,11 +78,17 @@ public class SimpleGuard : BaseEnemy
         transform.position += to.normalized * speed * Time.deltaTime;
     }
 
-    // Proper override (prevents hide warning)
+    
     protected override void OnDrawGizmosSelected()
     {
         base.OnDrawGizmosSelected();
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(lastKnownPos, 0.2f);
+    }
+
+    public void ExternalAlert(Vector3 suspectPosition)
+    {
+        lastKnownPos = suspectPosition;   
+        ChangeState(EnemyState.Alert);   
     }
 }

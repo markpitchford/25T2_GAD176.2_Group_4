@@ -4,7 +4,7 @@ public enum EnemyState { Patrol, Suspicious, Alert }
 
 public abstract class BaseEnemy : MonoBehaviour
 {
-    // === Tunables (encapsulation: protected + [SerializeField]) ===
+    
     [Header("Patrol")]
     [SerializeField] protected Transform[] waypoints;
     [SerializeField] protected float moveSpeed = 2.5f;
@@ -16,19 +16,19 @@ public abstract class BaseEnemy : MonoBehaviour
     [SerializeField] protected float hearingRange = 5f;
 
     [Header("Detection")]
-    [SerializeField] protected float fillRate = 60f;  // %/s while seeing
-    [SerializeField] protected float decayRate = 30f; // %/s while not seeing
+    [SerializeField] protected float fillRate = 60f;  
+    [SerializeField] protected float decayRate = 30f; 
 
     [Header("Debug")]
     [SerializeField] protected bool drawGizmos = true;
 
-    // === Shared state ===
+    
     protected EnemyState state = EnemyState.Patrol;
-    protected float detection = 0f; // 0..100
+    protected float detection = 0f; 
     protected Transform player;
     protected int wpIndex = 0;
 
-    // Public read-only accessors (encapsulation)
+    
     public EnemyState State => state;
     public float Detection01 => Mathf.Clamp01(detection / 100f);
 
@@ -41,29 +41,29 @@ public abstract class BaseEnemy : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (!player) return; // null check
+        if (!player) return; 
 
-        Sense(); // child defines how to see/hear
+        Sense(); 
 
         if (state == EnemyState.Patrol) Patrol();
         else if (state == EnemyState.Suspicious) Investigate();
         else Engage();
 
-        if (state != EnemyState.Alert) // passive decay
+        if (state != EnemyState.Alert) 
             detection = Mathf.Max(0f, detection - decayRate * Time.deltaTime);
     }
 
-    // === Overridable hooks (kept minimal) ===
+    
     protected virtual void Sense() { }
     protected virtual void Patrol()
     {
         if (waypoints == null || waypoints.Length == 0) return;
 
-        // Vector subtraction + magnitude
+        
         Vector3 to = waypoints[wpIndex].position - transform.position;
         if (to.magnitude < 0.2f) { wpIndex = (wpIndex + 1) % waypoints.Length; return; }
 
-        // Rotation + normalization + addition
+        
         Quaternion look = Quaternion.LookRotation(to.normalized, Vector3.up);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, look, turnSpeed * Time.deltaTime);
         transform.position += to.normalized * moveSpeed * Time.deltaTime;
@@ -71,7 +71,7 @@ public abstract class BaseEnemy : MonoBehaviour
     protected virtual void Investigate() { }
     protected virtual void Engage() { }
 
-    // === Tiny helpers ===
+    
     protected void ChangeState(EnemyState next)
     {
         if (state == next) return;
@@ -85,7 +85,7 @@ public abstract class BaseEnemy : MonoBehaviour
         if (detection >= 100f && state != EnemyState.Alert) ChangeState(EnemyState.Alert);
     }
 
-    // Gizmos (angles + rotations visual)
+    
     protected virtual void OnDrawGizmosSelected()
     {
         if (!drawGizmos) return;
