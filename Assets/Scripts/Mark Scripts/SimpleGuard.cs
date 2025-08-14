@@ -19,7 +19,9 @@ public class SimpleGuard : BaseEnemy
         
         Vector3 toPlayer = player.position - transform.position;
         float dist = toPlayer.magnitude;
+
         //Vision cone check
+
         if (dist <= visionRange)
         {
             Vector3 dir = toPlayer.normalized;
@@ -37,7 +39,9 @@ public class SimpleGuard : BaseEnemy
             }
         }
 
+
         //If player is in hearing range, increase detection
+
         if (dist <= hearingRange)
         {
             lastKnownPos = player.position;

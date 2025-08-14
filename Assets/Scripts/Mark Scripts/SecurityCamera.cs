@@ -30,13 +30,19 @@ using UnityEngine;
 
         void Start()
         {
+
             //Find player
+
             player = GameObject.FindGameObjectWithTag(playerTag)?.transform;
             baseYaw = transform.eulerAngles.y;
             if (!rb) rb = GetComponent<Rigidbody>();
             if (rb)
             {
+
                 
+
+                // Only spin around Y
+
                 rb.freezeRotation = false;
                 rb.constraints = RigidbodyConstraints.FreezePositionX |
                                  RigidbodyConstraints.FreezePositionY |
@@ -60,12 +66,18 @@ using UnityEngine;
 
             
             float currentSpeedDeg = Vector3.Dot(rb.angularVelocity, Vector3.up) * Mathf.Rad2Deg;  
-            float kp = 0.6f, kd = 0.1f; 
+
+            float kp = 0.6f, kd = 0.1f;  
+
             float desiredAccelDeg = kp * yawError - kd * currentSpeedDeg;                         
 
             
             float torque = desiredAccelDeg * Mathf.Deg2Rad;                                       
+
             rb.AddTorque(Vector3.up * torque, ForceMode.Acceleration); //Forces
+
+            rb.AddTorque(Vector3.up * torque, ForceMode.Acceleration);
+
         }
 
         void Update()
@@ -74,7 +86,9 @@ using UnityEngine;
 
             
             Vector3 eye = transform.position + Vector3.up * eyeHeight;                            
+
             //Check if player is within vision range
+
             Vector3 toPlayer = player.position - eye;                                             
             float dist = toPlayer.magnitude;                                                      
             if (dist > visionRange) return;
@@ -84,14 +98,20 @@ using UnityEngine;
             if (ang > visionHalfAngle) return;
 
             
+
             if (Physics.OverlapSphere(eye, proximityRadius, playerMask, QueryTriggerInteraction.Ignore).Length > 0) //Overlap shapes
+
+            if (Physics.OverlapSphere(eye, proximityRadius, playerMask, QueryTriggerInteraction.Ignore).Length > 0)
+
             {
                 TryBroadcast(player.position, "[Camera] Proximity alert (OverlapSphere).");
                 return;
             }
 
             
+
             if (Physics.SphereCast(eye, sweepRadius, dir, out RaycastHit hit, dist, playerMask, QueryTriggerInteraction.Ignore) //Raycasting and Spherecasting
+
                 && hit.collider.CompareTag(playerTag))
             {
                 TryBroadcast(player.position, "[Camera] Player via SphereCast.");
@@ -115,7 +135,9 @@ using UnityEngine;
             lastAlertTime = Time.time;
             foreach (var g in FindObjectsOfType<SimpleGuard>())
                 g.ExternalAlert(suspectPos);
+
             //Log for debugging
+
             Debug.Log(msg);
         }
 
